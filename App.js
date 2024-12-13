@@ -1,38 +1,31 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import Button from './components/Button';
+import HelloWorld from './components/HelloWorld';
+import Input from './components/Input';
 
 export default function App() {
   return (
     <View style={styles.container}>
-
       <Image source={require('./assets/logo.png')} style={styles.logo} />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#aaa"
+      <HelloWorld/>
+      <TextInput 
+        style={styles.input} 
+        placeholder="Email" 
+        placeholderTextColor="#aaa" 
+        keyboardType='email-address'
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#aaa"
+      
+      <TextInput 
+        style={styles.input} 
+        placeholder="Password" 
+        placeholderTextColor="#aaa" 
         secureTextEntry={true}
       />
+      <Input/>
+      <Button text="Login" />
 
-      <TextInput 
-      style={styles.input}
-      placeholder="No Rekening"
-      placeholderTextColor="#aaa"
-      secureTextEntry={true}
-      keyboardType='numberpad'
-      />
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <StatusBar style="auto" />
+      <StatusBar style="auto"/>
     </View>
   );
 }
@@ -46,9 +39,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logo: {
-    width: 200,
-    height: 50,
+    width: 233,
+    height: 57,
     marginBottom: 30,
+    resizeMode: 'stretch',
+    marginBottom: 75
   },
   title: {
     fontSize: 24,
@@ -66,19 +61,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
     fontSize: 16,
   },
-  button: {
-    backgroundColor: '#4DB6AC',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 15,
-    width: '100%',
-    alignItems: 'center',
-
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
 });
-
