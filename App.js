@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import Button from './components/Button';
-import HelloWorld from './components/HelloWorld';
+import HelloWorld from './components/Amount';
 import Input from './components/Input';
 
 export default function App() {
@@ -23,7 +23,7 @@ export default function App() {
         secureTextEntry={true}
       />
       <Input/>
-      <Button text="Login" />
+      <Button text="Login"/>
 
       <StatusBar style="auto"/>
     </View>
