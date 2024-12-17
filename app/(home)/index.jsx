@@ -26,86 +26,88 @@ function LogoTitle({ user }) {
   );
 }
 
-const transactions = [
-  {
-    id: 1,
-    date: '17 December 2024',
-    amount: '75.000',
-    name: 'Putri Afia',
-    type: 'Transfer Uang Bis',
-    debit: false,
-  },
-  {
-    id: 2,
-    date: '18 December 2024',
-    amount: '80.000',
-    name: 'Kopi 2 Go',
-    type: 'Transfer',
-    debit: true,
-  },
-  {
-    id: 3,
-    date: '19 December 2024',
-    amount: '600.000',
-    name: 'Zana',
-    type: 'Transfer',
-    debit: false,
-  },
-  {
-    id: 4,
-    date: '20 December 2024',
-    amount: '80.000',
-    name: 'Kopi Tuku',
-    type: 'Transfer',
-    debit: true,
-  },
-  {
-    id: 5,
-    date: '21 December 2024',
-    amount: '1.000.000',
-    name: 'Salma',
-    type: 'Transfer',
-    debit: false,
-  },
-  {
-    id: 6,
-    date: '22 December 2024',
-    amount: '80.000',
-    name: 'Shopee',
-    type: 'Transfer',
-    debit: true,
-  },
-  {
-    id: 7,
-    date: '23 December 2024',
-    amount: '600.000',
-    name: 'Salma',
-    type: 'Transfer',
-    debit: false,
-  },
-  {
-    id: 8,
-    date: '24 December 2024',
-    amount: '80.000',
-    name: 'Shopee',
-    type: 'Transfer',
-    debit: true,
-  },
-  {
-    id: 9,
-    date: '25 December 2024',
-    amount: '600.000',
-    name: 'Salma',
-    type: 'Transfer',
-    debit: false,
-  },
-]
+// const transactions = [
+//   {
+//     id: 1,
+//     date: '17 December 2024',
+//     amount: '75.000',
+//     name: 'Putri Afia',
+//     type: 'Transfer Uang Bis',
+//     debit: false,
+//   },
+//   {
+//     id: 2,
+//     date: '18 December 2024',
+//     amount: '80.000',
+//     name: 'Kopi 2 Go',
+//     type: 'Transfer',
+//     debit: true,
+//   },
+//   {
+//     id: 3,
+//     date: '19 December 2024',
+//     amount: '600.000',
+//     name: 'Zana',
+//     type: 'Transfer',
+//     debit: false,
+//   },
+//   {
+//     id: 4,
+//     date: '20 December 2024',
+//     amount: '80.000',
+//     name: 'Kopi Tuku',
+//     type: 'Transfer',
+//     debit: true,
+//   },
+//   {
+//     id: 5,
+//     date: '21 December 2024',
+//     amount: '1.000.000',
+//     name: 'Salma',
+//     type: 'Transfer',
+//     debit: false,
+//   },
+//   {
+//     id: 6,
+//     date: '22 December 2024',
+//     amount: '80.000',
+//     name: 'Shopee',
+//     type: 'Transfer',
+//     debit: true,
+//   },
+//   {
+//     id: 7,
+//     date: '23 December 2024',
+//     amount: '600.000',
+//     name: 'Salma',
+//     type: 'Transfer',
+//     debit: false,
+//   },
+//   {
+//     id: 8,
+//     date: '24 December 2024',
+//     amount: '80.000',
+//     name: 'Shopee',
+//     type: 'Transfer',
+//     debit: true,
+//   },
+//   {
+//     id: 9,
+//     date: '25 December 2024',
+//     amount: '600.000',
+//     name: 'Salma',
+//     type: 'Transfer',
+//     debit: false,
+//   },
+// ]
 
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const [showBalance, setShowBalance] = useState({});
+  const [transactions, setTransaction] = useState([])
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    getTransaction()
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
@@ -142,6 +144,29 @@ export default function Home() {
     };
     getData();
   }, [refreshing]);
+  useEffect(() => {
+    const getTransaction = async () => {
+      try {
+        const value = await AsyncStorage.getItem("token");
+        if (value !== null) {
+          const res = await axios.get(
+            "https://walled-api.vercel.app/transactions",
+            {
+              headers: {
+                Authorization: `Bearer ${value}`,
+              },
+            }
+          );
+          const transaction = res.data.data
+          setTransaction(transaction)
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getTransaction();
+  }, [refreshing]);
+
   return (
     <ScrollView containerStyle={styles.container}
       contentContainerStyle={styles.scrollView}
@@ -182,6 +207,7 @@ export default function Home() {
               </TouchableOpacity>
             </Text>
           </View>
+
           <View>
             <View style={{ gap: 20 }}>
               <TouchableOpacity style={{ width: 40, height: 40, backgroundColor: '#19918F', borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
@@ -196,17 +222,18 @@ export default function Home() {
 
         <ScrollView style={{ flex: 1, backgroundColor: '#fff', marginTop: 40, borderRadius: 10 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold', padding: 20, borderBottomColor: '#b3b3b3', borderBottomWidth: 0.5, }}>Transaction History</Text>
-          {transactions.map((transaction) => (
-            <View key={transaction.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
+          {transactions?.map((tx) => (
+            <View key={transactions?.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
               <View>
-                <Text style={{ fontSize: 18 }}>{transaction.name}</Text>
-                <Text style={{ fontSize: 16 }}>{transaction.type}</Text>
-                <Text style={{ fontSize: 14, color: '#b3b3b3' }}>{transaction.date}</Text>
+                <Text style={{ fontSize: 19 }}>{user?.fullname}</Text>
+                <Text style={{ fontSize: 16 }}>{tx?.transaction_type}</Text>
+                <Text style={{ fontSize: 14, color: '#b3b3b3' }}>{tx?.transaction_date}</Text>
               </View>
-              <Text style={{ fontSize: 18, color: transaction.debit ? 'red' : 'green' }}>{transaction.debit ? '-' : '+'}  Rp {transaction.amount}</Text>
-            </View>
+              <Text style={{ fontSize: 18, color: tx?.transaction_type === "transfer" ? 'red' : 'green' }}>{tx?.transaction_type === "transfer" ? '-' : '+'}  Rp {tx.amount}</Text>
+            </View> 
           ))}
         </ScrollView>
+
 
       </View>
       <StatusBar style="auto" />
