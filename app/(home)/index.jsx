@@ -1,7 +1,7 @@
 import { Link, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Image, Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useState, useEffect } from 'react';
+import { Image, Text, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { useState, useEffect, React, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -10,16 +10,18 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 function LogoTitle({ user }) {
   console.log(user.avatar_url);
   const [isAvatarActive, setIsAvatarActive] = useState(true);
+  console.log("USER", user);
+
   return (
     <TouchableOpacity
       style={[
         styles.avatarContainer,
-        { borderColor: setIsAvatarActive ? "#178F8D" : "#fafbfd" },
+        { borderColor: setIsAvatarActive ? "#4cc4c2" : "#19918F" },
       ]}
       onPress={() => setIsAvatarActive((prev) => !prev)}
       activeOpacity={0.8}
     >
-      <Image style={styles.image} source={{ uri: user.avatar_url }} />
+      <Image style={styles.image} source={{ uri: user?.avatar_url }} />
     </TouchableOpacity>
   );
 }
@@ -27,31 +29,88 @@ function LogoTitle({ user }) {
 const transactions = [
   {
     id: 1,
-    date: '08 December 2024',
+    date: '17 December 2024',
     amount: '75.000',
-    name: 'Indoapril',
-    type: 'Topup',
+    name: 'Putri Afia',
+    type: 'Transfer Uang Bis',
     debit: false,
   },
   {
     id: 2,
-    date: '06 December 2024',
+    date: '18 December 2024',
     amount: '80.000',
-    name: 'Si Fulan',
+    name: 'Kopi 2 Go',
     type: 'Transfer',
     debit: true,
   },
   {
     id: 3,
-    date: '06 December 2024',
+    date: '19 December 2024',
+    amount: '600.000',
+    name: 'Zana',
+    type: 'Transfer',
+    debit: false,
+  },
+  {
+    id: 4,
+    date: '20 December 2024',
     amount: '80.000',
-    name: 'Si Fulan',
+    name: 'Kopi Tuku',
+    type: 'Transfer',
+    debit: true,
+  },
+  {
+    id: 5,
+    date: '21 December 2024',
+    amount: '1.000.000',
+    name: 'Salma',
+    type: 'Transfer',
+    debit: false,
+  },
+  {
+    id: 6,
+    date: '22 December 2024',
+    amount: '80.000',
+    name: 'Shopee',
+    type: 'Transfer',
+    debit: true,
+  },
+  {
+    id: 7,
+    date: '23 December 2024',
+    amount: '600.000',
+    name: 'Salma',
+    type: 'Transfer',
+    debit: false,
+  },
+  {
+    id: 8,
+    date: '24 December 2024',
+    amount: '80.000',
+    name: 'Shopee',
+    type: 'Transfer',
+    debit: true,
+  },
+  {
+    id: 9,
+    date: '25 December 2024',
+    amount: '600.000',
+    name: 'Salma',
     type: 'Transfer',
     debit: false,
   },
 ]
 
 export default function Home() {
+  const [refreshing, setRefreshing] = useState(false);
+  const [showBalance, setShowBalance] = useState({});
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   const [user, setUser] = useState({
     fullname: "",
     id: "",
@@ -82,9 +141,13 @@ export default function Home() {
       }
     };
     getData();
-  }, []);
+  }, [refreshing]);
   return (
-    <ScrollView containerStyle={styles.container}>
+    <ScrollView containerStyle={styles.container}
+      contentContainerStyle={styles.scrollView}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <LogoTitle user={user} />
@@ -112,7 +175,12 @@ export default function Home() {
         <View style={styles.balancebox}>
           <View>
             <Text style={{ fontSize: 20 }}>Balance</Text>
-            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Rp {user?.wallet?.balance}</Text>
+            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{showBalance ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(user?.wallet.balance || 0)
+              : "Rp *"}
+              <TouchableOpacity onPress={() => setShowBalance((prev) => !prev)}>
+                <Image source={require('../../assets/view.png')} style={{ width: 18, height: 18, marginLeft: 10 }} />
+              </TouchableOpacity>
+            </Text>
           </View>
           <View>
             <View style={{ gap: 20 }}>
@@ -188,6 +256,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   image: {
+    borderRadius: 999,
     width: 50,
     height: 50,
   },
